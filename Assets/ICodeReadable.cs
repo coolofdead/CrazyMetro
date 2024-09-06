@@ -1,8 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 
 public interface ICodeReadable
 {
-    public bool CanReadCode(List<Touch> touches);
-    public void ReceiveCode(List<Touch> touches);
+    public bool CanReadCode(Code code);
+    public void ReceiveCode(Code code);
+    public string GetDescForCode(Code code);
+    public IEnumerable<Code> GetAllCodes();
 }

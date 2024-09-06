@@ -3,29 +3,53 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Codex : MonoBehaviour
+public class Codex : MonoBehaviour, ICodeReadable
 {
     public static Codex Instance;
 
-    public List<Code> AllCodes;
-    public List<List<Touch>> UnlockedCodes;
+    public Code openCodexCode;
 
-    public void UnlockCode(List<Touch> touches)
+    public IEnumerable<ICodeReadable> AllCodes;
+    public List<Code> UnlockedCodes;
+
+    private void Awake()
     {
-        if (UnlockedCodes.Any(allCode => allCode[0] == touches[0] && allCode[1] == touches[1])) return;
+        Instance = this;
 
-        UnlockedCodes.Add(touches);
+        AllCodes = FindObjectsOfType<MonoBehaviour>().OfType<ICodeReadable>();
     }
 
-    public string GetDescForCode(List<Touch> touches)
+    public void UnlockCode(Code code)
     {
-        return AllCodes.First(allCode => allCode.touches[0] == touches[0] && allCode.touches[1] == touches[1]).description;
+        if (UnlockedCodes.Any(unlockedCode => unlockedCode.Equals(code))) return;
+
+        UnlockedCodes.Add(code);
+    }
+
+    public string GetDescForCode(Code code)
+    {
+        return "Open Codex"; // AllCodes.First(allCode => allCode.firstInput == code.firstInput && allCode.secondInput == code.secondInput).description;
+    }
+
+    public bool CanReadCode(Code code)
+    {
+        return code.Equals(openCodexCode);
+    }
+
+    public void ReceiveCode(Code code)
+    {
+        // TODO : Show Codex OR Close Codex
+    }
+
+    public IEnumerable<Code> GetAllCodes()
+    {
+        return new List<Code>() { openCodexCode };
     }
 }
 
 [System.Serializable]
-public struct Code
+public struct CodeDesc
 {
-    public List<Touch> touches;
+    public Code touches;
     public string description;
 }

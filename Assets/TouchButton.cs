@@ -8,6 +8,6 @@ public class TouchButton : MonoBehaviour
 
     public void Touch()
     {
-
+        TouchpadManager.Instance.RegisterTouch(touch);
     }
 }

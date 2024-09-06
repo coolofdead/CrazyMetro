@@ -6,7 +6,7 @@ public class TouchpadManager : MonoBehaviour
 {
     public static TouchpadManager Instance;
 
-    public List<Touch> touches = new(2);
+    public Code code;
 
     private void Awake()
     {
@@ -23,25 +23,37 @@ public class TouchpadManager : MonoBehaviour
 
     public void RegisterTouch(Touch touch)
     {
-        touches.Add(touch);
-
-        if (touches.Count == 2)
+        if (code.firstInput == Touch.None)
         {
-            Codex.Instance.UnlockCode(touches);
-            TouchManager.Instance.SendCode(touches);
+            code.firstInput = touch;
+        }
+        else
+        {
+            code.secondInput = touch;
+
+            Codex.Instance.UnlockCode(code);
+            TouchManager.Instance.SendCode(code);
+
+            code = new();
         }
     }
 
     public void RemoveLastTouch()
     {
-        if (touches.Count == 0) return;
-
-        touches.RemoveAt(touches.Count - 1);
+        if (code.firstInput == Touch.None)
+        {
+            code.firstInput = Touch.None;
+        }
+        else
+        {
+            code.secondInput = Touch.None;
+        }
     }
 }
 
 public enum Touch
 {
+    None,
     Green,
     Red,
     Yellow,

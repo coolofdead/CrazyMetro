@@ -11,18 +11,42 @@ public class TouchManager : MonoBehaviour
 
     private void Awake()
     {
+        Instance = this;
+
         codeReadables = FindObjectsOfType<MonoBehaviour>().OfType<ICodeReadable>();
     }
 
-    public void SendCode(List<Touch> touches)
+    public void SendCode(Code code)
     {
+        var codeHasBeenRead = false;
+
         foreach (var codeReadable in codeReadables)
         {
-            if (codeReadable.CanReadCode(touches))
+            if (codeReadable.CanReadCode(code))
             {
-                codeReadable.ReceiveCode(touches);
+                codeReadable.ReceiveCode(code);
+                codeHasBeenRead = true;
             }
         }
+
+        if (!codeHasBeenRead)
+        {
+            ConsoleManager.Instance.PrintLog("Error on code");
+        }
+    }
+}
+
+[System.Serializable]
+public struct Code
+{
+    public Touch firstInput;
+    public Touch secondInput;
+
+    public override bool Equals(object obj)
+    {
+        if (obj == null || GetType() != obj.GetType()) return false;
+
+        return firstInput == ((Code)obj).firstInput && secondInput == ((Code)obj).secondInput;
     }
 }
 
